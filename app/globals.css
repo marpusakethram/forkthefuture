@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+/* Palette: Meta-like clean white canvas with one confident blue, and a dark "studio" for the instruments. */
+@theme {
+  --font-sans: "Figtree Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --color-paper: #ffffff;
+  --color-mist: #f1f4f7;
+  --color-line: #dfe5eb;
+  --color-ink: #1c2b33;
+  --color-slate: #5d6c7b;
+  --color-signal: #0866ff;
+  --color-signal-deep: #0050d0;
+  --color-signal-soft: #e7f0ff;
+
+  --color-studio: #15191e;
+  --color-studio-raised: #1d2228;
+  --color-studio-line: #2b323a;
+  --color-studio-text: #e6ebf0;
+  --color-studio-muted: #8b98a5;
+  --color-trace: #6ea8ff;
+
+  --color-adjusted: #e8a33d;
+  --color-danger: #e5484d;
+  --color-ok: #2fa36b;
+
+  --radius-panel: 28px;
+  --radius-card: 20px;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01";
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  ::selection {
+    background: var(--color-signal-soft);
+  }
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* KaTeX picks up the surrounding colour; keep display equations from overflowing on phones. */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 0;
+  margin: 0.4em 0;
+}
+
+mark.evidence {
+  background: color-mix(in oklab, var(--color-signal) 22%, transparent);
+  color: inherit;
+  border-radius: 4px;
+  padding: 0 2px;
+  cursor: pointer;
+  transition: background-color 160ms ease, box-shadow 160ms ease;
+}
+mark.evidence[data-active="true"] {
+  background: color-mix(in oklab, var(--color-signal) 55%, transparent);
+  box-shadow: 0 0 0 2px var(--color-signal);
+}
+mark.evidence.equation {
+  background: color-mix(in oklab, var(--color-trace) 14%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "two-link-arm-handout.pdf": {
+    "template": "robot-arm",
+    "params": {
+      "L1": { "value": 0.5, "page": 2 },
+      "L2": { "value": 0.3, "page": 2 },
+      "theta1": { "value": 30, "page": 2 },
+      "theta2": { "value": 45, "page": 2 }
+    }
+  },
+  "battery-fade-note.pdf": {
+    "template": "battery-fade",
+    "params": {
+      "Q0": { "value": 2.5, "page": 1 },
+      "d": { "value": 0.0005, "page": 1 },
+      "nMax": { "value": 1000, "page": 1 }
+    }
+  },
+  "inference-queue-note.pdf": {
+    "template": "queue-mm1",
+    "params": {
+      "lambda": { "value": 9, "page": 1 },
+      "mu": { "value": 12, "page": 1 }
+    }
+  },
+  "unsupported-ecology-note.pdf": {
+    "template": "unsupported",
+    "params": {}
+  }
+}
