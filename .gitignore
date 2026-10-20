@@ -10,3 +10,6 @@ test-results/
 public/pdf.worker.min.mjs
 brag-output*/composition/node_modules/
 tsconfig.tsbuildinfo
+
+# Hyperframes local state
+brag-output*/composition/.hyperframes/

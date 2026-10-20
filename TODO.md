@@ -48,5 +48,5 @@
 - [x] Self-authored CC BY 4.0 golden fixtures
 - [x] README with validity boundaries
 - [x] 12+ unit tests (47) and e2e flagship flow (9)
-- [x] Launch video via /brag (Hyperframes) — see brag-output/
+- [x] Launch video via /brag (Hyperframes) — brag-output/brag.mp4 (23.2s, 1080p)
 - [ ] Live Gemini run verified with a real key (not possible from the build sandbox; see README)

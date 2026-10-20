@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>ForkTheFuture — brag</title>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Figtree";
+        src: url("assets/fonts/figtree-latin-wght-normal.woff2") format("woff2");
+        font-weight: 300 900;
+        font-display: block;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        background: #ffffff;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: "Figtree", ui-sans-serif, system-ui, sans-serif;
+        color: #1c2b33;
+        font-variant-numeric: tabular-nums;
+      }
+      .clip {
+        position: absolute;
+        inset: 0;
+      }
+      .light {
+        background: #ffffff;
+      }
+      .dark {
+        background: #15191e;
+        color: #e6ebf0;
+      }
+
+      /* Step label shared by scenes 2–4 */
+      .step {
+        position: absolute;
+        left: 120px;
+        top: 84px;
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        font-size: 52px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .step .num {
+        width: 72px;
+        height: 72px;
+        border-radius: 999px;
+        background: #e7f0ff;
+        color: #0866ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 38px;
+      }
+      .dark .step .num {
+        background: rgba(8, 102, 255, 0.2);
+        color: #9cc1ff;
+      }
+
+      /* Scene 1 */
+      #s1-copy {
+        position: absolute;
+        left: 120px;
+        top: 250px;
+        width: 860px;
+      }
+      #s1-copy h1 {
+        font-size: 118px;
+        line-height: 1.02;
+        letter-spacing: -0.04em;
+        font-weight: 750;
+      }
+      #s1-copy h1 span {
+        display: block;
+      }
+      #s1-sub {
+        margin-top: 40px;
+        font-size: 36px;
+        line-height: 1.4;
+        color: #4a5966;
+        max-width: 760px;
+      }
+      #s1-panel {
+        position: absolute;
+        right: 120px;
+        top: 150px;
+        width: 780px;
+        height: 780px;
+        border-radius: 40px;
+        background: #15191e;
+        overflow: hidden;
+        box-shadow: 0 40px 100px -40px rgba(21, 25, 30, 0.7);
+      }
+
+      /* Scene 2 */
+      #s2-drop {
+        position: absolute;
+        left: 260px;
+        top: 250px;
+        width: 1400px;
+        height: 620px;
+        border-radius: 40px;
+        border: 5px dashed #c9d3dd;
+        background: #f1f4f7;
+      }
+      #s2-drop-hover {
+        position: absolute;
+        inset: -5px;
+        border-radius: 40px;
+        border: 5px dashed #0866ff;
+        background: #e7f0ff;
+        opacity: 0;
+      }
+      #s2-idle,
+      #s2-reading {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        text-align: center;
+      }
+      #s2-idle .big,
+      #s2-reading .big {
+        font-size: 50px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      #s2-idle .small,
+      #s2-reading .small {
+        font-size: 30px;
+        color: #4a5966;
+      }
+      #s2-reading {
+        opacity: 0;
+        justify-content: flex-start;
+        padding-top: 70px;
+      }
+      .pages {
+        display: flex;
+        gap: 40px;
+        margin-top: 34px;
+      }
+      .pagecard {
+        width: 520px;
+        height: 300px;
+        border-radius: 24px;
+        background: #ffffff;
+        border: 3px solid #0866ff;
+        padding: 26px 30px;
+        text-align: left;
+        box-shadow: 0 20px 50px -30px rgba(21, 25, 30, 0.5);
+      }
+      .pagecard h4 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .pagecard h4 .tick {
+        color: #0866ff;
+      }
+      .pagecard p {
+        font-size: 22px;
+        line-height: 1.5;
+        color: #4a5966;
+      }
+      #s2-file {
+        position: absolute;
+        left: 1500px;
+        top: 760px;
+        width: 380px;
+        height: 150px;
+        border-radius: 24px;
+        background: #ffffff;
+        box-shadow: 0 30px 70px -20px rgba(21, 25, 30, 0.45);
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding: 0 28px;
+      }
+      #s2-file .tag {
+        width: 80px;
+        height: 100px;
+        border-radius: 12px;
+        background: #e5484d;
+        color: #fff;
+        font-weight: 800;
+        font-size: 26px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding-bottom: 14px;
+      }
+      #s2-file .name {
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1.3;
+      }
+      #s2-file .meta {
+        font-size: 20px;
+        color: #5d6c7b;
+        font-weight: 500;
+      }
+      .cursor {
+        position: absolute;
+        width: 54px;
+        height: 54px;
+      }
+      #s2-cursor {
+        left: 1820px;
+        top: 860px;
+      }
+
+      /* Scene 3 */
+      #s3-paper {
+        position: absolute;
+        left: 120px;
+        top: 220px;
+        width: 860px;
+        height: 780px;
+        background: #ffffff;
+        border-radius: 18px;
+        box-shadow:
+          0 2px 0 #e3e8ee,
+          0 40px 90px -40px rgba(21, 25, 30, 0.45);
+        border: 2px solid #e3e8ee;
+        padding: 56px 64px;
+      }
+      #s3-paper .pg {
+        font-size: 22px;
+        color: #66727d;
+        font-weight: 600;
+        margin-bottom: 26px;
+      }
+      #s3-paper .h {
+        font-size: 34px;
+        font-weight: 750;
+        margin-bottom: 22px;
+      }
+      #s3-paper p {
+        font-size: 32px;
+        line-height: 1.6;
+        margin-bottom: 22px;
+        color: #26343d;
+      }
+      #s3-paper .foot {
+        position: absolute;
+        left: 64px;
+        bottom: 40px;
+        font-size: 18px;
+        color: #66727d;
+      }
+      mark {
+        background: transparent;
+        color: inherit;
+        border-radius: 8px;
+        padding: 0 4px;
+        box-shadow: 0 0 0 0 rgba(8, 102, 255, 0);
+      }
+      #s3-table {
+        position: absolute;
+        left: 1040px;
+        top: 220px;
+        width: 760px;
+        border-radius: 28px;
+        border: 2px solid #dfe5eb;
+        overflow: hidden;
+      }
+      #s3-table .head {
+        background: #f1f4f7;
+        color: #5d6c7b;
+        font-size: 24px;
+        font-weight: 700;
+        padding: 20px 30px;
+      }
+      .prow {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 26px 30px;
+        border-top: 2px solid #dfe5eb;
+        height: 136px;
+      }
+      .prow .tint {
+        position: absolute;
+        inset: 0;
+        background: #e7f0ff;
+        opacity: 0;
+      }
+      .prow .l {
+        position: relative;
+        font-size: 30px;
+        font-weight: 700;
+      }
+      .prow .l small {
+        display: block;
+        font-size: 22px;
+        color: #5d6c7b;
+        font-weight: 500;
+        margin-top: 4px;
+      }
+      .prow .r {
+        position: relative;
+        text-align: right;
+        opacity: 0;
+      }
+      .prow .v {
+        font-size: 36px;
+        font-weight: 750;
+      }
+      .chip {
+        display: inline-block;
+        margin-top: 6px;
+        font-size: 21px;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 5px 14px;
+        background: #e7f0ff;
+        color: #0057d9;
+        border: 2px solid #9cc1ff;
+      }
+      #s3-note {
+        position: absolute;
+        left: 1040px;
+        top: 900px;
+        width: 760px;
+        font-size: 28px;
+        line-height: 1.45;
+        color: #4a5966;
+        opacity: 0;
+      }
+
+      /* Scene 4 */
+      #s4-panel {
+        position: absolute;
+        left: 120px;
+        top: 200px;
+        width: 840px;
+        height: 840px;
+        border-radius: 36px;
+        overflow: hidden;
+        border: 2px solid #2b323a;
+      }
+      #s4-glow {
+        position: absolute;
+        left: 120px;
+        top: 200px;
+        width: 840px;
+        height: 840px;
+        border-radius: 36px;
+        box-shadow: 0 0 120px 10px rgba(8, 102, 255, 0.25);
+        opacity: 0.5;
+      }
+      #s4-side {
+        position: absolute;
+        left: 1020px;
+        top: 200px;
+        width: 780px;
+      }
+      .card {
+        background: #1d2228;
+        border-radius: 28px;
+        padding: 30px 34px;
+        margin-bottom: 26px;
+      }
+      .card .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+      .card .lbl {
+        font-size: 32px;
+        font-weight: 700;
+      }
+      .card .val {
+        font-size: 44px;
+        font-weight: 750;
+      }
+      .chip-d {
+        display: inline-block;
+        margin-top: 12px;
+        font-size: 22px;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 6px 16px;
+        position: relative;
+      }
+      #chip-paper {
+        background: rgba(8, 102, 255, 0.18);
+        color: #9cc1ff;
+        border: 2px solid rgba(8, 102, 255, 0.5);
+      }
+      #chip-adj {
+        position: absolute;
+        left: 0;
+        background: rgba(232, 163, 61, 0.16);
+        color: #f0b860;
+        border: 2px solid rgba(232, 163, 61, 0.55);
+        opacity: 0;
+      }
+      .track {
+        position: relative;
+        margin-top: 34px;
+        height: 14px;
+        border-radius: 999px;
+        background: #2b323a;
+      }
+      .fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 14px;
+        border-radius: 999px;
+        background: #0866ff;
+        width: 625px;
+        transform-origin: 0 50%;
+      }
+      .thumb {
+        position: absolute;
+        top: -14px;
+        left: 0;
+        width: 42px;
+        height: 42px;
+        border-radius: 999px;
+        background: #ffffff;
+        border: 5px solid #0866ff;
+        box-shadow: 0 2px 12px rgba(8, 102, 255, 0.5);
+      }
+      .ticks {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 16px;
+        font-size: 20px;
+        color: #8b98a5;
+      }
+      .readouts {
+        display: flex;
+        gap: 26px;
+      }
+      .readouts .card {
+        flex: 1;
+      }
+      .readouts .k {
+        font-size: 24px;
+        color: #8b98a5;
+        font-weight: 600;
+      }
+      .readouts .n {
+        font-size: 64px;
+        font-weight: 750;
+        margin-top: 4px;
+        color: #f0b860;
+      }
+      #s4-eq {
+        font-size: 28px;
+        line-height: 1.5;
+        color: #c8d3de;
+      }
+      #s4-eq b {
+        color: #ffffff;
+      }
+      #s4-cursor {
+        left: 1500px;
+        top: 760px;
+      }
+
+      /* Scene 5 */
+      #s5 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+      #s5-line {
+        font-size: 104px;
+        font-weight: 750;
+        letter-spacing: -0.04em;
+      }
+      #s5-mark {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        margin-top: 70px;
+        font-size: 64px;
+        font-weight: 650;
+        letter-spacing: -0.02em;
+      }
+      #s5-tag {
+        margin-top: 26px;
+        font-size: 36px;
+        color: #4a5966;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="23.2" data-width="1920" data-height="1080">
+      <!-- ============ Scene 1: Hook ============ -->
+      <section id="s1" class="clip light" data-start="0" data-duration="3.7" data-track-index="0">
+        <div id="s1-copy">
+          <h1>
+            <span id="s1-l1">What if research</span>
+            <span id="s1-l2">papers were</span>
+            <span id="s1-l3">playable?</span>
+          </h1>
+          <p id="s1-sub">Drop in a PDF. Get a simulator you can move, with every number traced to its page.</p>
+        </div>
+        <div id="s1-panel"><svg id="arm1" width="780" height="780" viewBox="0 0 780 780"></svg></div>
+      </section>
+
+      <!-- ============ Scene 2: Drop a PDF ============ -->
+      <section id="s2" class="clip light" data-start="3.7" data-duration="5.26" data-track-index="0">
+        <div class="step" id="s2-step"><span class="num">1</span>Drop in a research PDF</div>
+        <div id="s2-drop" data-layout-allow-overlap>
+          <div id="s2-drop-hover"></div>
+          <div id="s2-idle">
+            <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="#0866ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <path d="M14 2v6h6" />
+              <path d="M12 18v-6" />
+              <path d="m9 15 3-3 3 3" />
+            </svg>
+            <div class="big">Drop a research PDF here</div>
+            <div class="small">Text is read in your browser. You choose the pages.</div>
+          </div>
+          <div id="s2-reading">
+            <div class="big">Reading 2 pages in your browser</div>
+            <div class="small">Nothing is uploaded until you pick pages.</div>
+            <div class="pages">
+              <div class="pagecard" id="s2-p1">
+                <h4>Page 1 <span class="tick">Selected</span></h4>
+                <p>Forward Kinematics of a Two-Link Planar Arm. This handout derives the end-effector position of a two-link planar arm from its joint angles.</p>
+              </div>
+              <div class="pagecard" id="s2-p2">
+                <h4>Page 2 <span class="tick">Selected</span></h4>
+                <p>Worked example. Our bench arm has L1 = 0.5 m and L2 = 0.3 m. In the reference pose the shoulder is at theta1 = 30 deg…</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="s2-file">
+          <div class="tag">PDF</div>
+          <div>
+            <div class="name">two-link-arm-handout.pdf</div>
+            <div class="meta">2 pages, 3 KB</div>
+          </div>
+        </div>
+        <svg class="cursor" id="s2-cursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2l16 10-7 1.5L9.5 21z" fill="#1c2b33" stroke="#fff" stroke-width="1.4" stroke-linejoin="round" /></svg>
+      </section>
+
+      <!-- ============ Scene 3: Receipts ============ -->
+      <section id="s3" class="clip light" data-start="8.96" data-duration="4.74" data-track-index="0">
+        <div class="step" id="s3-step"><span class="num">2</span>See where every number came from</div>
+        <div id="s3-paper">
+          <div class="pg">two-link-arm-handout.pdf, page 2</div>
+          <div class="h">Worked example</div>
+          <p>Our bench arm has <mark id="m1">L1 = 0.5 m</mark> and <mark id="m2">L2 = 0.3 m</mark>.</p>
+          <p>In the reference pose the shoulder is at <mark id="m3">theta1 = 30 deg</mark> and the elbow at <mark id="m4">theta2 = 45 deg</mark>.</p>
+          <p>The reachable workspace is an annulus with inner radius |L1 − L2| and outer radius L1 + L2.</p>
+          <div class="foot">Sample handout, CC BY 4.0</div>
+        </div>
+        <div id="s3-table">
+          <div class="head">Parameter found in the paper</div>
+          <div class="prow" id="r1"><div class="tint"></div><div class="l">Link 1 length<small>shoulder to elbow</small></div><div class="r"><div class="v">0.5 m</div><span class="chip">From paper, p. 2</span></div></div>
+          <div class="prow" id="r2"><div class="tint"></div><div class="l">Link 2 length<small>elbow to hand</small></div><div class="r"><div class="v">0.3 m</div><span class="chip">From paper, p. 2</span></div></div>
+          <div class="prow" id="r3"><div class="tint"></div><div class="l">Shoulder angle θ₁<small>from the floor line</small></div><div class="r"><div class="v">30°</div><span class="chip">From paper, p. 2</span></div></div>
+          <div class="prow" id="r4"><div class="tint"></div><div class="l">Elbow angle θ₂<small>bend between the links</small></div><div class="r"><div class="v">45°</div><span class="chip">From paper, p. 2</span></div></div>
+        </div>
+      </section>
+
+      <!-- ============ Scene 4: Play ============ -->
+      <section id="s4" class="clip dark" data-start="13.7" data-duration="5.79" data-track-index="0">
+        <div class="step" id="s4-step"><span class="num">3</span>Move it. The maths moves with it.</div>
+        <div id="s4-glow"></div>
+        <div id="s4-panel"><svg id="arm4" width="840" height="840" viewBox="0 0 840 840"></svg></div>
+        <div id="s4-side">
+          <div class="card">
+            <div class="row"><span class="lbl">Elbow angle θ₂</span><span class="val" id="s4-deg">45°</span></div>
+            <div style="position: relative; height: 52px">
+              <span class="chip-d" id="chip-paper">From paper, p. 2</span>
+              <span class="chip-d" id="chip-adj">Adjusted by you (paper says 45°)</span>
+            </div>
+            <div class="track">
+              <div class="fill" id="s4-fill"></div>
+              <div class="thumb" id="s4-thumb"></div>
+            </div>
+            <div class="ticks"><span>−180°</span><span>0°</span><span>180°</span></div>
+          </div>
+          <div class="readouts">
+            <div class="card"><div class="k">Hand x</div><div class="n" id="s4-x">0.511 m</div></div>
+            <div class="card"><div class="k">Hand y</div><div class="n" id="s4-y">0.540 m</div></div>
+          </div>
+          <div class="card"><div id="s4-eq">x = 0.50 cos 30° + 0.30 cos 75° = <b>0.511 m</b></div></div>
+        </div>
+        <svg class="cursor" id="s4-cursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2l16 10-7 1.5L9.5 21z" fill="#ffffff" stroke="#15191e" stroke-width="1.4" stroke-linejoin="round" /></svg>
+      </section>
+
+      <!-- ============ Scene 5: Outro ============ -->
+      <section id="s5" class="clip light" data-start="19.49" data-duration="3.71" data-track-index="0">
+        <div id="s5-line">Every number has a page number.</div>
+        <div id="s5-mark">
+          <svg width="76" height="76" viewBox="0 0 24 24" aria-hidden="true">
+            <line x1="4" y1="20" x2="11" y2="9" stroke="#0866ff" stroke-width="3" stroke-linecap="round" />
+            <line x1="11" y1="9" x2="20" y2="6" stroke="#6ea8ff" stroke-width="2.5" stroke-linecap="round" />
+            <circle cx="4" cy="20" r="2.2" fill="#1c2b33" />
+            <circle cx="11" cy="9" r="2" fill="#1c2b33" />
+            <circle cx="20" cy="6" r="2.2" fill="none" stroke="#1c2b33" stroke-width="1.6" />
+          </svg>
+          forkthefuture
+        </div>
+        <div id="s5-tag">Three tested models. Honest about everything else.</div>
+      </section>
+
+      <!-- ============ Audio ============ -->
+      <audio id="music" src="assets/music/happy-beats-business-moves-vol-11-by-ende-dot-app.mp3" data-start="0" data-duration="23.2" data-volume="0.5" data-fade-in="0.4" data-fade-out="1.2" data-track-index="2"></audio>
+      <audio id="sfx-drop" src="assets/sfx/drop_002.ogg" data-start="5.2" data-duration="0.19" data-volume="0.8" data-track-index="3"></audio>
+      <audio id="sfx-p1" src="assets/sfx/click_003.ogg" data-start="6.0" data-duration="0.01" data-volume="0.6" data-track-index="4"></audio>
+      <audio id="sfx-p2" src="assets/sfx/click_003.ogg" data-start="6.5" data-duration="0.01" data-volume="0.6" data-track-index="4"></audio>
+      <audio id="sfx-h1" src="assets/sfx/click_003.ogg" data-start="9.5" data-duration="0.01" data-volume="0.7" data-track-index="4"></audio>
+      <audio id="sfx-h2" src="assets/sfx/click_003.ogg" data-start="10.54" data-duration="0.01" data-volume="0.7" data-track-index="4"></audio>
+      <audio id="sfx-h3" src="assets/sfx/click_003.ogg" data-start="11.6" data-duration="0.01" data-volume="0.7" data-track-index="4"></audio>
+      <audio id="sfx-h4" src="assets/sfx/click_003.ogg" data-start="12.65" data-duration="0.01" data-volume="0.7" data-track-index="4"></audio>
+      <audio id="sfx-grab" src="assets/sfx/switch2.ogg" data-start="14.55" data-duration="0.3" data-volume="0.6" data-track-index="3"></audio>
+      <audio id="sfx-land" src="assets/sfx/click_003.ogg" data-start="17.91" data-duration="0.01" data-volume="0.7" data-track-index="4"></audio>
+      <audio id="sfx-logo" src="assets/sfx/impactSoft_medium_001.ogg" data-start="20.02" data-duration="0.18" data-volume="0.8" data-track-index="3"></audio>
+    </div>
+
+    <script>
+      // ---------- Two-link arm: same model as lib/models/robot-arm.ts ----------
+      const DEG = Math.PI / 180;
+      function fk(L1, L2, t1, t2) {
+        const ex = L1 * Math.cos(t1 * DEG);
+        const ey = L1 * Math.sin(t1 * DEG);
+        return { ex, ey, x: ex + L2 * Math.cos((t1 + t2) * DEG), y: ey + L2 * Math.sin((t1 + t2) * DEG) };
+      }
+      const NS = "http://www.w3.org/2000/svg";
+      function el(parent, name, attrs) {
+        const e = document.createElementNS(NS, name);
+        for (const k in attrs) e.setAttribute(k, attrs[k]);
+        parent.appendChild(e);
+        return e;
+      }
+
+      /** Builds a realistic, annotated arm in `svg` and returns an update(θ1, θ2) function. */
+      function buildArm(svg, size, L1, L2, opt) {
+        const reach = L1 + L2;
+        const extent = reach * 1.22;
+        const s = size / 2 / extent; // px per metre
+        const c = size / 2;
+        const P = (x, y) => [c + x * s, c - y * s];
+        const u = size / 120; // drawing unit in px
+        const defs = el(svg, "defs", {});
+        defs.innerHTML = `
+          <radialGradient id="${opt.id}bg" cx="50%" cy="45%" r="75%"><stop offset="0%" stop-color="#1d232a"/><stop offset="100%" stop-color="#111418"/></radialGradient>
+          <linearGradient id="${opt.id}l1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5f9bff"/><stop offset="45%" stop-color="#1f6fff"/><stop offset="100%" stop-color="#0a3fa8"/></linearGradient>
+          <linearGradient id="${opt.id}l2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a9c9ff"/><stop offset="45%" stop-color="#6ea8ff"/><stop offset="100%" stop-color="#3a6fc2"/></linearGradient>
+          <radialGradient id="${opt.id}jh" cx="35%" cy="30%" r="75%"><stop offset="0%" stop-color="#6b7783"/><stop offset="60%" stop-color="#38424c"/><stop offset="100%" stop-color="#1c2228"/></radialGradient>
+          <filter id="${opt.id}sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="${u * 0.6}" dy="${u * 0.9}" stdDeviation="${u * 0.8}" flood-color="#000" flood-opacity="0.55"/></filter>`;
+        el(svg, "rect", { x: 0, y: 0, width: size, height: size, fill: `url(#${opt.id}bg)` });
+        // grid every 0.2 m with metre labels
+        const step = 0.2;
+        for (let v = -Math.floor(extent / step) * step; v <= extent + 1e-9; v += step) {
+          const p = Math.round(v * 100) / 100;
+          const [gx] = P(p, 0);
+          const [, gy] = P(0, p);
+          el(svg, "line", { x1: gx, x2: gx, y1: 0, y2: size, stroke: p === 0 ? "#46515c" : "#232a31", "stroke-width": p === 0 ? 2 : 1 });
+          el(svg, "line", { y1: gy, y2: gy, x1: 0, x2: size, stroke: p === 0 ? "#46515c" : "#232a31", "stroke-width": p === 0 ? 2 : 1 });
+          if (opt.ticks && p !== 0 && Math.abs(p) < extent * 0.92) {
+            const t = el(svg, "text", { x: gx, y: c + u * 3.4, fill: "#8e9aa6", "font-size": u * 2.4, "text-anchor": "middle" });
+            t.textContent = p.toFixed(1);
+          }
+        }
+        if (opt.ticks) {
+          const tx = el(svg, "text", { x: size - u * 2, y: c - u * 1.6, fill: "#8b98a5", "font-size": u * 2.6, "font-weight": 600, "text-anchor": "end" });
+          tx.textContent = "x (m)";
+          const ty = el(svg, "text", { x: c + u * 1.6, y: u * 4, fill: "#8b98a5", "font-size": u * 2.6, "font-weight": 600 });
+          ty.textContent = "y (m)";
+        }
+        // reachable annulus
+        const rO = reach * s;
+        const rI = Math.abs(L1 - L2) * s;
+        el(svg, "path", {
+          d: `M ${c - rO} ${c} a ${rO} ${rO} 0 1 0 ${2 * rO} 0 a ${rO} ${rO} 0 1 0 ${-2 * rO} 0 Z M ${c - rI} ${c} a ${rI} ${rI} 0 1 0 ${2 * rI} 0 a ${rI} ${rI} 0 1 0 ${-2 * rI} 0 Z`,
+          fill: "rgba(110,168,255,0.07)",
+          "fill-rule": "evenodd",
+          stroke: "rgba(110,168,255,0.45)",
+          "stroke-width": 2,
+          "stroke-dasharray": "8 7",
+        });
+        const reachLbl = el(svg, "text", { x: c, y: c + rO + u * 4.2, fill: "#8fb6f5", "font-size": u * 2.6, "font-weight": 600, "text-anchor": "middle" });
+        reachLbl.textContent = "Reachable area";
+
+        const ann = el(svg, "g", {});
+        const dropX = el(ann, "line", { stroke: "#e8a33d", "stroke-width": 2.5, "stroke-dasharray": "8 6" });
+        const dropY = el(ann, "line", { stroke: "#e8a33d", "stroke-width": 2.5, "stroke-dasharray": "8 6" });
+        const arc1 = el(ann, "path", { fill: "none", stroke: "#e6ebf0", "stroke-width": 3 });
+        const ext = el(ann, "line", { stroke: "#e6ebf0", "stroke-width": 2, "stroke-dasharray": "6 5" });
+        const arc2 = el(ann, "path", { fill: "none", stroke: "#e6ebf0", "stroke-width": 3 });
+        el(ann, "line", { x1: c, y1: c, x2: c + L1 * s * 0.45, y2: c, stroke: "#e6ebf0", "stroke-width": 2, "stroke-dasharray": "6 5" });
+
+        // base mount
+        const base = el(svg, "g", { filter: `url(#${opt.id}sh)` });
+        el(base, "path", { d: `M ${c - u * 5.5} ${c + u * 4.4} L ${c + u * 5.5} ${c + u * 4.4} L ${c + u * 3.4} ${c + u * 0.8} L ${c - u * 3.4} ${c + u * 0.8} Z`, fill: "#3a444e", stroke: "#0b0e12", "stroke-width": 2 });
+        el(base, "rect", { x: c - u * 7, y: c + u * 4.4, width: u * 14, height: u * 1.2, rx: u * 0.4, fill: "#2b323a", stroke: "#0b0e12", "stroke-width": 1.5 });
+
+        // arm: nested groups make the geometry an exact composition of rotations
+        const armG = el(svg, "g", { filter: `url(#${opt.id}sh)` });
+        const g1 = el(armG, "g", {});
+        const w1 = u * 4.2;
+        const w2 = u * 3.4;
+        el(g1, "rect", { x: -w1 / 2, y: -w1 / 2, width: L1 * s + w1, height: w1, rx: w1 / 2, fill: `url(#${opt.id}l1)`, stroke: "#06245f", "stroke-width": 2 });
+        el(g1, "rect", { x: w1 * 0.6, y: -w1 * 0.12, width: L1 * s - w1 * 1.2, height: w1 * 0.24, rx: w1 * 0.12, fill: "rgba(0,0,0,0.28)" });
+        const g2 = el(g1, "g", {});
+        el(g2, "rect", { x: -w2 / 2, y: -w2 / 2, width: L2 * s + w2, height: w2, rx: w2 / 2, fill: `url(#${opt.id}l2)`, stroke: "#1d3d70", "stroke-width": 2 });
+        // gripper at the end of link 2
+        const gr = el(g2, "g", { transform: `translate(${L2 * s} 0)` });
+        const gs = u * 3.6;
+        el(gr, "rect", { x: -gs * 0.1, y: -gs * 0.55, width: gs * 0.35, height: gs * 1.1, rx: gs * 0.08, fill: "#3b4652", stroke: "#0b0e12", "stroke-width": 1.5 });
+        el(gr, "rect", { x: gs * 0.2, y: -gs * 0.55, width: gs * 0.75, height: gs * 0.22, rx: gs * 0.07, fill: "#c9d3dd", stroke: "#0b0e12", "stroke-width": 1.5 });
+        el(gr, "rect", { x: gs * 0.2, y: gs * 0.33, width: gs * 0.75, height: gs * 0.22, rx: gs * 0.07, fill: "#c9d3dd", stroke: "#0b0e12", "stroke-width": 1.5 });
+        el(gr, "circle", { cx: 0, cy: 0, r: u * 0.8, fill: "#e8a33d", stroke: "#0b0e12", "stroke-width": 1.5 });
+        const joint = (parent, r) => {
+          el(parent, "circle", { cx: 0, cy: 0, r, fill: `url(#${opt.id}jh)`, stroke: "#0b0e12", "stroke-width": 2 });
+          el(parent, "circle", { cx: 0, cy: 0, r: r * 0.72, fill: "none", stroke: "rgba(255,255,255,0.18)", "stroke-width": 1.5 });
+          for (let a = 0; a < 360; a += 60) el(parent, "circle", { cx: r * 0.55 * Math.cos(a * DEG), cy: r * 0.55 * Math.sin(a * DEG), r: r * 0.08, fill: "#9aa6b2" });
+          el(parent, "circle", { cx: 0, cy: 0, r: r * 0.28, fill: "#d6dde4", stroke: "#0b0e12", "stroke-width": 1.2 });
+        };
+        joint(g2, u * 3);
+        joint(g1, u * 3.6);
+
+        // labels with dark pills
+        const labels = el(svg, "g", { "font-size": u * 2.9, "font-weight": 650 });
+        function pill(color) {
+          const g = el(labels, "g", {});
+          const r = el(g, "rect", { rx: u * 1, fill: "rgba(13,16,20,0.85)" });
+          const t = el(g, "text", { fill: color, "text-anchor": "middle" });
+          return {
+            set(x, y, text) {
+              t.textContent = text;
+              const w = text.length * u * 1.62 + u * 2.4;
+              r.setAttribute("x", x - w / 2);
+              r.setAttribute("y", y - u * 2.6);
+              r.setAttribute("width", w);
+              r.setAttribute("height", u * 3.7);
+              t.setAttribute("x", x);
+              t.setAttribute("y", y);
+            },
+          };
+        }
+        const lt1 = pill("#e6ebf0");
+        const lt2 = pill("#e6ebf0");
+        const lL1 = pill("#9cc1ff");
+        const lL2 = pill("#c8dcff");
+        const lx = pill("#f0b860");
+        const ly = pill("#f0b860");
+        const lh = pill("#ffffff");
+
+        function arcPath(cx, cy, r, a0, a1) {
+          const [x0, y0] = [cx + r * Math.cos(a0 * DEG), cy - r * Math.sin(a0 * DEG)];
+          const [x1, y1] = [cx + r * Math.cos(a1 * DEG), cy - r * Math.sin(a1 * DEG)];
+          const large = Math.abs(a1 - a0) > 180 ? 1 : 0;
+          const sweep = a1 > a0 ? 0 : 1;
+          return `M ${x0} ${y0} A ${r} ${r} 0 ${large} ${sweep} ${x1} ${y1}`;
+        }
+
+        return function update(t1, t2) {
+          const k = fk(L1, L2, t1, t2);
+          const [exs, eys] = P(k.ex, k.ey);
+          const [hx, hy] = P(k.x, k.y);
+          g1.setAttribute("transform", `translate(${c} ${c}) rotate(${-t1})`);
+          g2.setAttribute("transform", `translate(${L1 * s} 0) rotate(${-t2})`);
+          dropX.setAttribute("x1", hx); dropX.setAttribute("y1", hy); dropX.setAttribute("x2", hx); dropX.setAttribute("y2", c);
+          dropY.setAttribute("x1", hx); dropY.setAttribute("y1", hy); dropY.setAttribute("x2", c); dropY.setAttribute("y2", hy);
+          const r1 = L1 * s * 0.32;
+          const r2 = L2 * s * 0.42;
+          arc1.setAttribute("d", arcPath(c, c, r1, 0, t1));
+          ext.setAttribute("x1", exs); ext.setAttribute("y1", eys);
+          ext.setAttribute("x2", exs + Math.cos(t1 * DEG) * L2 * s * 0.6); ext.setAttribute("y2", eys - Math.sin(t1 * DEG) * L2 * s * 0.6);
+          arc2.setAttribute("d", arcPath(exs, eys, r2, t1, t1 + t2));
+          if (!opt.labels) return k;
+          const m1 = t1 / 2;
+          lt1.set(c + (r1 + u * 6) * Math.cos(m1 * DEG), c - (r1 + u * 6) * Math.sin(m1 * DEG) + u * 1, `θ₁ ${Math.round(t1)}°`);
+          const m2 = t1 + t2 / 2;
+          lt2.set(exs + (r2 + u * 6.5) * Math.cos(m2 * DEG), eys - (r2 + u * 6.5) * Math.sin(m2 * DEG) + u * 1, `θ₂ ${Math.round(t2)}°`);
+          const n1 = (t1 + 90) * DEG;
+          lL1.set((c + exs) / 2 + Math.cos(n1) * u * 6, (c + eys) / 2 - Math.sin(n1) * u * 6 + u * 1, `L₁ ${L1.toFixed(2)} m`);
+          const n2 = (t1 + t2 + 90) * DEG;
+          lL2.set((exs + hx) / 2 + Math.cos(n2) * u * 7, (eys + hy) / 2 - Math.sin(n2) * u * 7 + u * 1, `L₂ ${L2.toFixed(2)} m`);
+          lx.set(hx, c + u * 7.5, `x = ${k.x.toFixed(3)}`);
+          ly.set(c - u * 11, hy + u * 1, `y = ${k.y.toFixed(3)}`);
+          lh.set(hx + u * 1, hy - u * 7, `Hand (${k.x.toFixed(2)}, ${k.y.toFixed(2)}) m`);
+          return k;
+        };
+      }
+
+      const arm1 = buildArm(document.getElementById("arm1"), 780, 1.0, 0.7, { id: "a1", ticks: false, labels: true });
+      const arm4 = buildArm(document.getElementById("arm4"), 840, 0.5, 0.3, { id: "a4", ticks: true, labels: true });
+      arm1(35, 50);
+      arm4(30, 45);
+
+      // ---------- Timeline ----------
+      const tl = gsap.timeline({ paused: true });
+
+      // Scene 1 — hook
+      tl.fromTo("#s1-l1", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 0.15);
+      tl.fromTo("#s1-l2", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 0.4);
+      tl.fromTo("#s1-l3", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 0.65);
+      tl.fromTo("#s1-sub", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 1.2);
+      tl.fromTo("#s1-panel", { x: 120, opacity: 0 }, { x: 0, opacity: 1, duration: 0.7, ease: "power3.out" }, 0.2);
+      const wave = { p: 0 };
+      tl.to(wave, {
+        p: 1,
+        duration: 3.5,
+        ease: "none",
+        onUpdate: () => arm1(35 + 18 * Math.sin(wave.p * Math.PI * 2), 50 + 40 * Math.sin(wave.p * Math.PI * 2 + 0.9) - 40 * Math.sin(0.9)),
+      }, 0.2);
+      tl.to("#s1-copy", { x: -60, opacity: 0, duration: 0.35, ease: "power2.in" }, 3.35);
+      tl.to("#s1-panel", { x: 80, opacity: 0, duration: 0.35, ease: "power2.in" }, 3.35);
+
+      // Scene 2 — drop a PDF (scene starts 3.70, strong cue)  // beat-locked: 3.70s
+      tl.fromTo("#s2-step", { y: -30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 3.75);
+      tl.fromTo("#s2-drop", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 3.8);
+      tl.fromTo("#s2-file", { x: 0, y: 0, opacity: 0, rotation: 6 }, { opacity: 1, duration: 0.3 }, 3.95);
+      tl.fromTo("#s2-cursor", { x: 0, y: 0, opacity: 0 }, { opacity: 1, duration: 0.2 }, 4.1);
+      // drag the file card into the dropzone
+      tl.to("#s2-file", { x: -740, y: -330, rotation: -2, duration: 1.0, ease: "power2.inOut" }, 4.2);
+      tl.to("#s2-cursor", { x: -740, y: -330, duration: 1.0, ease: "power2.inOut" }, 4.2);
+      tl.to("#s2-drop-hover", { opacity: 1, duration: 0.25 }, 4.85);
+      // drop
+      tl.to("#s2-file", { scale: 0.6, opacity: 0, duration: 0.3, ease: "power2.in" }, 5.2);
+      tl.to("#s2-cursor", { opacity: 0, duration: 0.25 }, 5.3);
+      tl.to("#s2-drop-hover", { opacity: 0, duration: 0.4 }, 5.35);
+      tl.to("#s2-idle", { opacity: 0, duration: 0.25 }, 5.3);
+      tl.to("#s2-reading", { opacity: 1, duration: 0.35 }, 5.45);
+      tl.fromTo("#s2-p1", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "back.out(1.4)" }, 6.0);
+      tl.fromTo("#s2-p2", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "back.out(1.4)" }, 6.5);
+      tl.to(["#s2-step", "#s2-drop"], { x: -80, opacity: 0, duration: 0.35, ease: "power2.in" }, 8.6);
+
+      // Scene 3 — receipts (scene starts 8.96, strong cue)  // beat-locked: 8.96s
+      tl.fromTo("#s3-step", { y: -30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 9.0);
+      tl.fromTo("#s3-paper", { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 9.0);
+      tl.fromTo("#s3-table", { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 9.1);
+      // beat-grid (every other beat so each label is readable): 9.50, 10.54, 11.60, 12.65
+      [9.5, 10.54, 11.6, 12.65].forEach((t, i) => {
+        const n = i + 1;
+        tl.to(`#m${n}`, { backgroundColor: "rgba(8,102,255,0.22)", boxShadow: "0 0 0 3px #0866ff", duration: 0.25, ease: "power2.out" }, t);
+        tl.to(`#r${n} .tint`, { opacity: 1, duration: 0.25 }, t);
+        tl.fromTo(`#r${n} .r`, { x: 30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.35, ease: "back.out(1.6)" }, t + 0.05);
+        if (n > 1) {
+          tl.to(`#m${n - 1}`, { boxShadow: "0 0 0 0px rgba(8,102,255,0)", duration: 0.25 }, t);
+          tl.to(`#r${n - 1} .tint`, { opacity: 0.35, duration: 0.25 }, t);
+        }
+      });
+      tl.to(["#s3-step", "#s3-paper", "#s3-table"], { opacity: 0, duration: 0.3, ease: "power2.in" }, 13.4);
+
+      // Scene 4 — play
+      tl.fromTo("#s4-step", { y: -30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 13.75);
+      tl.fromTo("#s4-panel", { scale: 0.94, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.55, ease: "power3.out" }, 13.75);
+      tl.fromTo("#s4-side", { x: 60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 13.85);
+      // slider geometry: track 712px wide (card 780 − padding), −180..180 deg
+      const TRACK = 712 - 42;
+      const thumbX = (d) => ((d + 180) / 360) * TRACK;
+      gsap.set("#s4-thumb", { x: thumbX(45) });
+      gsap.set("#s4-fill", { scaleX: (thumbX(45) + 21) / 625 });
+      tl.fromTo("#s4-cursor", { x: 0, y: 0, opacity: 0 }, { opacity: 1, duration: 0.2 }, 14.1);
+      tl.to("#s4-cursor", { x: thumbX(45) - 480 + 34, y: -360, duration: 0.45, ease: "power2.out" }, 14.1);
+      // One driver: θ2 45° → 100°, landing on the 17.91s strong cue.  // beat-locked: 17.91s
+      const drive = { d: 45 };
+      const deg = document.getElementById("s4-deg");
+      const ox = document.getElementById("s4-x");
+      const oy = document.getElementById("s4-y");
+      const eq = document.getElementById("s4-eq");
+      const thumb = document.getElementById("s4-thumb");
+      const fill = document.getElementById("s4-fill");
+      const cursor4 = document.getElementById("s4-cursor");
+      function renderS4() {
+        const d = drive.d;
+        const k = arm4(30, d);
+        deg.textContent = `${Math.round(d)}°`;
+        ox.textContent = `${k.x.toFixed(3)} m`;
+        oy.textContent = `${k.y.toFixed(3)} m`;
+        eq.innerHTML = `x = 0.50 cos 30° + 0.30 cos ${Math.round(30 + d)}° = <b>${k.x.toFixed(3)} m</b>`;
+        thumb.style.transform = `translateX(${thumbX(d)}px)`;
+        fill.style.transform = `scaleX(${(thumbX(d) + 21) / 625})`;
+      }
+      tl.to(drive, { d: 100, duration: 3.31, ease: "power2.inOut", onUpdate: renderS4 }, 14.6);
+      tl.to(cursor4, { x: `+=${thumbX(100) - thumbX(45)}`, duration: 3.31, ease: "power2.inOut" }, 14.6);
+      tl.to("#chip-paper", { opacity: 0, duration: 0.25 }, 14.7);
+      tl.to("#chip-adj", { opacity: 1, duration: 0.3 }, 14.75);
+      tl.fromTo("#s4-x", { scale: 1 }, { scale: 1.08, duration: 0.18, yoyo: true, repeat: 1, ease: "power2.out" }, 17.91);
+      tl.fromTo("#s4-y", { scale: 1 }, { scale: 1.08, duration: 0.18, yoyo: true, repeat: 1, ease: "power2.out" }, 17.91);
+      tl.to("#s4-glow", { opacity: 1, duration: 0.3, yoyo: true, repeat: 1 }, 17.91);
+      tl.to(cursor4, { opacity: 0, duration: 0.3 }, 18.4);
+      tl.to(["#s4-step", "#s4-panel", "#s4-side", "#s4-glow"], { opacity: 0, duration: 0.35, ease: "power2.in" }, 19.15);
+
+      // Scene 5 — outro
+      tl.fromTo("#s5-line", { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 19.55);
+      tl.fromTo("#s5-mark", { y: 30, opacity: 0, scale: 0.9 }, { y: 0, opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.6)" }, 20.02); // beat-locked: 20.02s
+      tl.fromTo("#s5-tag", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power2.out" }, 20.55);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
