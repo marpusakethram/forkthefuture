@@ -8,6 +8,8 @@ unit-tested simulator you can play with.
 
 ![Studio with a mapped paper](docs/screenshots/studio-paper.png)
 
+**Videos:** [31-second walkthrough of the real app](docs/app-walkthrough.mp4) · [23-second launch video](brag-output/brag.mp4)
+
 It supports three model families and is honest about everything else:
 
 | Template | Equations | Validity |
