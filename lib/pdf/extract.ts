@@ -3,6 +3,9 @@
 
 import type { SourcePage } from "@/lib/ai/extract-schema";
 
+/** Where static assets live. "/" for the Next app; "" (page-relative) for the standalone preview build. */
+export const ASSET_BASE = process.env.NEXT_PUBLIC_ASSET_BASE ?? "/";
+
 export const PDF_LIMITS = { maxBytes: 10 * 1024 * 1024, maxPages: 40, minCharsPerPage: 20 };
 
 export type PdfErrorCode = "TOO_LARGE" | "TOO_MANY_PAGES" | "PROTECTED" | "NO_TEXT" | "NOT_PDF" | "PARSE_FAILED";
@@ -56,7 +59,7 @@ export async function extractPdf(file: File): Promise<ExtractedPdf> {
   const buf = await file.arrayBuffer();
   const sha256 = await sha256Hex(buf.slice(0));
   const pdfjs = await import("pdfjs-dist");
-  pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+  pdfjs.GlobalWorkerOptions.workerSrc = `${ASSET_BASE}pdf.worker.min.mjs`;
 
   let doc;
   try {

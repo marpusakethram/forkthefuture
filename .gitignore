@@ -13,3 +13,4 @@ tsconfig.tsbuildinfo
 
 # Hyperframes local state
 brag-output*/composition/.hyperframes/
+preview/dist/

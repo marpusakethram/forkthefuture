@@ -3,11 +3,11 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FileUp, ClipboardPaste, FileText, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
-import { extractPdf, pagesFromText, PdfExtractError, PDF_LIMITS } from "@/lib/pdf/extract";
+import { ASSET_BASE, extractPdf, pagesFromText, PdfExtractError, PDF_LIMITS } from "@/lib/pdf/extract";
 import { saveDraft } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-export const SAMPLE_PDF = { url: "/samples/two-link-arm-handout.pdf", name: "two-link-arm-handout.pdf" };
+export const SAMPLE_PDF = { url: `${ASSET_BASE}samples/two-link-arm-handout.pdf`, name: "two-link-arm-handout.pdf" };
 
 export function PdfUpload() {
   const router = useRouter();
