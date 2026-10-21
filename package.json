@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "fixtures": "tsx scripts/make-fixture-pdfs.mts",
-    "postinstall": "node scripts/copy-pdf-worker.mjs"
+    "postinstall": "node scripts/copy-pdf-worker.mjs",
+    "preview:build": "node preview/build.mjs"
   },
   "dependencies": {
     "@fontsource-variable/figtree": "^5.2.8",
